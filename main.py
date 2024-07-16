@@ -1,17 +1,11 @@
-import math, random
+import math
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
-import datetime as dt
 import yfinance as yf
 from sklearn.metrics import mean_squared_error
-from statsmodels.tsa.arima.model import ARIMA
-from alpha_vantage.timeseries import TimeSeries
-import preprocessor as p
-import re
 from sklearn.linear_model import LinearRegression
-from textblob import TextBlob
 import warnings 
 import os
 
@@ -24,7 +18,8 @@ def get_data(input):
     
     data = yf.download(input, start=start, end=end)
     df = pd.DataFrame(data=data)
-    LSTM_analysis(df)
+    df.to_csv(''+input+'.csv')
+
     
     
     return
@@ -107,7 +102,6 @@ def LSTM_analysis(df):
     plt.plot(predicted_price, label='Predicted price')
     plt.legend()
     plt.savefig('images/LSTM.png')
-    plt.show()
     plt.close(fig)
 
     lstm_error = math.sqrt(mean_squared_error(real_price,predicted_price))
@@ -115,18 +109,82 @@ def LSTM_analysis(df):
     forecast_price = scaler.inverse_transform(forecast_price)
     lstm_forecast = forecast_price[0,0]
     print("Tomorrow's " , input, "Closing price predicted by LSMT model is ", lstm_forecast )
-    print("LSTM RMSE:",lstm_error)
+    print("LSTM Root Mean Square Error:",lstm_error)
 
     return lstm_error,lstm_forecast
 
+#***** linear regression Analysis *****
+def linear_regression_analysis(df): 
+
+    forecast = int(7)
+
+    df['Close after 7 days'] = df['Close'].shift(-forecast)
+
+    new_df = df[['Close','Close after 7 days']]
+
+    y = np.array(new_df.iloc[:-forecast,-1])
+    y = np.reshape(y,(-1,1))
+
+    x = np.array(new_df.iloc[:-forecast,0:-1])
+    forcast_x = np.array(new_df.iloc[-forecast:,0:-1])
+
+    x_train = x[0:int(len(df)*0.8),:]
+    x_test = x[int(len(df)*0.8):,:]
+    y_train = x[0:int(len(df)*0.8),:]
+    y_test = x[int(len(df)*0.8):,:]
+
+    from sklearn.preprocessing import StandardScaler
+    scalar = StandardScaler()
+
+    x_train = scalar.fit_transform(x_train)
+    x_test = scalar.transform(x_test)
+    forcast_x = scalar.transform(forcast_x)
+    model = LinearRegression(n_jobs=-1)
+    model.fit(x_train,y_train)
+
+    y_pred = model.predict(x_test)
+    y_pred = y_pred*(1.04)
+    fig = plt.figure(figsize=(7,5))
+    plt.plot(y_test, label="Real price")
+    plt.plot(y_pred, label='Predicted price')
+    plt.legend()
+    plt.savefig('images/Linear.png')
+    plt.close(fig)
+
+    linear_error = math.sqrt(mean_squared_error(y_test,y_pred))
+    forecast_results = model.predict(forcast_x)
+    forecast_results=forecast_results*(1.04)
+    mean=forecast_results.mean()
+    linear_pred=forecast_results[0,0]
+    print("Tomorrow's ",input," Closing Price Prediction by Linear Regression: ",linear_pred)
+    print("Linear Regression Root Mean Square Error:",linear_error)
     
+    return df, linear_pred, forecast_results, mean, linear_error
+
+def recommendation(df,today_price,mean):
+    if today_price.iloc[-1]['Close'] < mean:
+        price = 'RISE' 
+        decision="BUY"
+        print("According to the Machine learning Predictions, a",price,"in",input,"stock is expected you should ",decision)
+    else:
+        price = 'FALL' 
+        decision="SELL"
+        print("According to the Machine learning Predictions , a",price,"in",input,"stock is expected you should ",decision)
+    return price, decision
+
+
+
 
 
 
 input = 'AAPL'
-
-
 get_data(input)
-
-    
-
+df = pd.read_csv(''+input+'.csv')
+print("Today's",input,"Stock Data: ")
+today_price = df.iloc[-1:]
+print(today_price)
+lstm_error, lstm_forecast=LSTM_analysis(df)
+df, linear_pred, forecast_results,mean,linear_error=linear_regression_analysis(df)
+print("Forecasted Prices for Next 7 days:")
+print(forecast_results)
+price, decision = recommendation(df,today_price,mean)
