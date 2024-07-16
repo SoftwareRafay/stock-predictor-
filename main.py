@@ -106,8 +106,8 @@ def LSTM_analysis(df):
     plt.plot(real_price, label="Real price")
     plt.plot(predicted_price, label='Predicted price')
     plt.legend()
-    plt.show()
     plt.savefig('images/LSTM.png')
+    plt.show()
     plt.close(fig)
 
     lstm_error = math.sqrt(mean_squared_error(real_price,predicted_price))
