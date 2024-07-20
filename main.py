@@ -8,6 +8,13 @@ from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression
 import warnings 
 import os
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from statsmodels.tsa.arima.model import ARIMA
+
+app = Flask(__name__)
+CORS(app)
+
 
 warnings.filterwarnings("ignore")
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -18,14 +25,14 @@ def get_data(input):
     
     data = yf.download(input, start=start, end=end)
     df = pd.DataFrame(data=data)
-    df.to_csv(''+input+'.csv')
+    
 
     
     
-    return
+    return df
 
 
-#****LSTM Analysis*****
+
 def LSTM_analysis(df):
     data_train = df.iloc[0:int(len(df)*0.8),:] #using 80% of data for training
     data_test = df.iloc[int(len(df)*0.8):,:] #using 20%  of data for testing
@@ -80,7 +87,7 @@ def LSTM_analysis(df):
 
     model.add(Dense(units=1))
     model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(x_train, y_train,epochs=30,batch_size=32)
+    model.fit(x_train, y_train,epochs=15,batch_size=32)
 
     real_price = data_test.iloc[:,4:5].values
 
@@ -101,19 +108,19 @@ def LSTM_analysis(df):
     plt.plot(real_price, label="Real price")
     plt.plot(predicted_price, label='Predicted price')
     plt.legend()
-    plt.savefig('images/LSTM.png')
+    plt.savefig('public/LSTM.png')
     plt.close(fig)
 
     lstm_error = math.sqrt(mean_squared_error(real_price,predicted_price))
     forecast_price = model.predict(x_forecast)
     forecast_price = scaler.inverse_transform(forecast_price)
-    lstm_forecast = forecast_price[0,0]
-    print("Tomorrow's " , input, "Closing price predicted by LSMT model is ", lstm_forecast )
-    print("LSTM Root Mean Square Error:",lstm_error)
+   
+    
+    lstm_forecast = forecast_price[0][0]
+    
 
-    return lstm_error,lstm_forecast
+    return float(lstm_error), float(lstm_forecast)
 
-#***** linear regression Analysis *****
 def linear_regression_analysis(df): 
 
     forecast = int(7)
@@ -130,8 +137,8 @@ def linear_regression_analysis(df):
 
     x_train = x[0:int(len(df)*0.8),:]
     x_test = x[int(len(df)*0.8):,:]
-    y_train = x[0:int(len(df)*0.8),:]
-    y_test = x[int(len(df)*0.8):,:]
+    y_train = y[0:int(len(df)*0.8),:]
+    y_test = y[int(len(df)*0.8):,:]
 
     from sklearn.preprocessing import StandardScaler
     scalar = StandardScaler()
@@ -148,43 +155,124 @@ def linear_regression_analysis(df):
     plt.plot(y_test, label="Real price")
     plt.plot(y_pred, label='Predicted price')
     plt.legend()
-    plt.savefig('images/Linear.png')
+    plt.savefig('public/Linear.png')
     plt.close(fig)
 
     linear_error = math.sqrt(mean_squared_error(y_test,y_pred))
     forecast_results = model.predict(forcast_x)
     forecast_results=forecast_results*(1.04)
-    mean=forecast_results.mean()
-    linear_pred=forecast_results[0,0]
-    print("Tomorrow's ",input," Closing Price Prediction by Linear Regression: ",linear_pred)
-    print("Linear Regression Root Mean Square Error:",linear_error)
     
-    return df, linear_pred, forecast_results, mean, linear_error
+    forecast_results = forecast_results.flatten()
+    linear_pred=forecast_results[0]
+    mean=forecast_results.mean()
+    
+    
+    return df, float(linear_pred), float(mean), float(linear_error), forecast_results.tolist()
 
-def recommendation(df,today_price,mean):
+def ARIMA_analysis(df):
+    data = df['Close'].values
+
+    
+    train_size = int(len(data) * 0.8)
+    train_data, test_data = data[0:train_size], data[train_size:len(data)]
+
+   
+    history = [x for x in train_data]
+    predictions = list()
+    for t in range(len(test_data)):
+        model = ARIMA(history, order=(5,1,0))  
+        model_fit = model.fit()
+        output = model_fit.forecast()
+        
+        yhat = output[0]
+        predictions.append(yhat)
+        history.append(test_data[t])
+
+    
+    error_arima = math.sqrt(mean_squared_error(test_data, predictions))
+    arima_forecast = model_fit.forecast(steps=7) 
+    fig = plt.figure(figsize=(7, 5))
+    plt.plot(test_data, label='Actual Price')
+    plt.plot(predictions, label='ARIMA Predicted Price')
+    plt.legend()
+    plt.savefig('public/ARIMA.png')
+    plt.close(fig)
+    arima_pred = arima_forecast[0]
+
+    return float(error_arima), arima_pred
+
+
+def recommendation(today_price,mean):
     if today_price.iloc[-1]['Close'] < mean:
         price = 'RISE' 
         decision="BUY"
-        print("According to the Machine learning Predictions, a",price,"in",input,"stock is expected you should ",decision)
+        
     else:
         price = 'FALL' 
         decision="SELL"
-        print("According to the Machine learning Predictions , a",price,"in",input,"stock is expected you should ",decision)
+        
+    
     return price, decision
 
+@app.route('/predict', methods=['POST'])
+def predict():
+    input_data = request.json
+    stock_symbol = input_data['stock']
+    df = get_data(stock_symbol)
+    today_price = df.iloc[-1:]
+    
+    lstm_error, lstm_forecast=LSTM_analysis(df)
+    df, linear_pred,mean,linear_error, forecast_results=linear_regression_analysis(df)
+    error_arima, arima_pred = ARIMA_analysis(df)
+    price, decision = recommendation(today_price,mean)
+     
+    response = {
+        "open": round(float(today_price['Open'].values[0]),2),  
+        "close": round(float(today_price['Close'].values[0]),2),
+        "adj_close": round(float(today_price['Adj Close'].values[0]),2),
+        "high": round(float(today_price['High'].values[0]),2),
+        "low": round(float(today_price['Low'].values[0]),2),
+        "vol": float(today_price['Volume'].values[0]),
+        "error_arima": round(error_arima,2),
+        "arima_pred": round(arima_pred,2),
+        "lstm_error": round(lstm_error, 2),
+        "lstm_forecast": round(lstm_forecast, 2),
+        "forecast_results": [round(val, 2) for val in forecast_results],  
+        "linear_pred": round(linear_pred, 2),
+        "linear_error": round(linear_error, 2),
+        "price": price,
+        "decision": decision
+    }
+    return jsonify(response)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
 
 
 
-input = 'AAPL'
-get_data(input)
-df = pd.read_csv(''+input+'.csv')
-print("Today's",input,"Stock Data: ")
-today_price = df.iloc[-1:]
-print(today_price)
-lstm_error, lstm_forecast=LSTM_analysis(df)
-df, linear_pred, forecast_results,mean,linear_error=linear_regression_analysis(df)
-print("Forecasted Prices for Next 7 days:")
-print(forecast_results)
-price, decision = recommendation(df,today_price,mean)
+
+
+
+
+# input = 'GOOG'
+# df = get_data(input)
+
+# print("Today's",input,"Stock Data: ")
+# today_price = df.iloc[-1:]
+# print(today_price)
+# lstm_error, lstm_forecast=LSTM_analysis(df)
+# df, linear_pred,mean,linear_error, forecast_results=linear_regression_analysis(df)
+# error_arima, arima_forecast = ARIMA_analysis(df)
+# print("Forecasted Prices for Next 7 days:")
+# print(forecast_results)
+# print(linear_pred)
+# print(lstm_forecast)
+# price, decision = recommendation(df,today_price,mean)
+# print(price)
+# print(decision)
+# print(mean)
+# print(arima_forecast)
+# print(error_arima)

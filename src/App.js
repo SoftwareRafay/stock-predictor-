@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import axios from "axios";
+import Header from "./Header";  
+import AboutPage from "./AboutPage";
+import ContactPage from "./ContactPage";
+import CurrencyConverter from "./CurrencyConverter";
+import HomePage from "./HomePage";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [stock, setStock] = useState("");
+	const [result, setResult] = useState(null);
+
+	const handleChange = (e) => {
+		setStock(e.target.value);
+	};
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		try {
+			const response = await axios.post("http://localhost:5000/predict", {stock});
+			setResult(response.data);
+		} catch (error) {
+			console.error("There was an error fetching the data", error);
+		}
+	};
+	return (
+		<Router>
+			<div className="app">
+				<Header />
+				<header className="app-header">
+					<Routes>
+						<Route
+							exact
+							path="/"
+							element={
+								<HomePage
+									
+								/>
+							}
+						/>
+						<Route path="/about" element={<AboutPage />} />
+						<Route path="/contact" element={<ContactPage />} />
+						<Route path="/currency-converter" element={<CurrencyConverter />} />
+					</Routes>
+				</header>
+			</div>
+		</Router>
+	);
 }
 
 export default App;
