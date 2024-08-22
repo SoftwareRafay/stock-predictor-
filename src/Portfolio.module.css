@@ -1,0 +1,95 @@
+/* Portfolio.module.css */
+
+
+
+.portfolioPage input[type="text"],
+.portfolioPage input[type="date"],
+.portfolioPage input[type="number"] {
+  padding: 10px;
+  margin: 10px 0;
+  margin-left: 20px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 90%;
+  box-sizing: border-box;
+}
+
+.portfolioPage button {
+  padding: 10px 20px;
+  background-color: #254099;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 20px;
+}
+
+.portfolioPage button:hover {
+  background-color: #1f3c8c;
+}
+
+.portfolioPage table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.portfolioPage th,
+.portfolioPage td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.portfolioPage th {
+  background-color: #254099;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.portfolioPage tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.portfolioPage tr:hover {
+  background-color: #e2e8f0;
+}
+
+.portfolioPage td {
+  position: relative;
+}
+
+.portfolioPage td button {
+  background-color: #e63946;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.portfolioPage td button:hover {
+  background-color: #d62839;
+}
+
+.portfolioPage h2 {
+  margin-top: 20px;
+  color: #333;
+  font-size: 18px;
+}
+
+.portfolioPage p {
+  color: red;
+  font-size: 14px;
+}
+
+.portfolioPage .globalError {
+  color: red;
+  font-weight: bold;
+}

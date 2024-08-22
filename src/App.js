@@ -1,52 +1,38 @@
-import React, { useState } from "react";
+// App.js
+import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import axios from "axios";
 import Header from "./Header";  
 import AboutPage from "./AboutPage";
 import ContactPage from "./ContactPage";
 import CurrencyConverter from "./CurrencyConverter";
 import HomePage from "./HomePage";
+import Predict from "./Predict";
+import Portfolio from "./Portfolio";
+import StockInfo from "./StockInfo";
+import Dashboard from "./Dashboard";
+import Footer from "./Footer";
 
 function App() {
-	const [stock, setStock] = useState("");
-	const [result, setResult] = useState(null);
-
-	const handleChange = (e) => {
-		setStock(e.target.value);
-	};
-
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		try {
-			const response = await axios.post("http://localhost:5000/predict", {stock});
-			setResult(response.data);
-		} catch (error) {
-			console.error("There was an error fetching the data", error);
-		}
-	};
-	return (
-		<Router>
-			<div className="app">
-				<Header />
-				<header className="app-header">
-					<Routes>
-						<Route
-							exact
-							path="/"
-							element={
-								<HomePage
-									
-								/>
-							}
-						/>
-						<Route path="/about" element={<AboutPage />} />
-						<Route path="/contact" element={<ContactPage />} />
-						<Route path="/currency-converter" element={<CurrencyConverter />} />
-					</Routes>
-				</header>
-			</div>
-		</Router>
-	);
+    return (
+        <Router>
+            <div className="app">
+                <Header />
+                <main className="app-header">
+                    <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/about" element={<AboutPage />} />
+                        <Route path="/contact" element={<ContactPage />} />
+                        <Route path="/currency-converter" element={<CurrencyConverter />} />
+                        <Route path="/predict" element={<Predict />} />
+                        <Route path="/portfolio" element={<Portfolio />} />
+                        <Route path="/stockinfo" element={<StockInfo />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                    </Routes>
+                </main>
+                <Footer />
+            </div>
+        </Router>
+    );
 }
 
 export default App;

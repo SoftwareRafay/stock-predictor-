@@ -1,0 +1,190 @@
+/* General Container Styling */
+h1, h2 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 10px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.contact-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 50px;
+    background-color: #f9f9f9;
+    font-family: 'Roboto', sans-serif;
+    width: 100%;
+    max-width: 1400px;
+    margin: auto;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    gap: 40px; /* To add space between left and right side */
+}
+
+/* Left Side - Form and Description Styling */
+.left-side {
+    flex: 1.5;
+    padding-right: 40px;
+}
+
+/* Line under "Leave us your info" */
+.left-side h1::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: #254099;
+    margin-top: 10px;
+    border-radius: 2px;
+}
+
+.description {
+    font-size: 18px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 35px;
+}
+
+.contact-form .form-group {
+    margin-bottom: 20px;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: #254099;
+    outline: none;
+}
+
+.contact-form button {
+    padding: 14px 28px;
+    background-color: #254099;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.contact-form button:hover {
+    background-color: #1f3579;
+}
+
+/* Right Side - Social Media and Location Styling */
+.right-side {
+    flex: 1;
+    padding-left: 40px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+}
+
+.social-media {
+    margin-bottom: 30px;
+}
+
+/* Line under "Follow Us" */
+.right-side .social-media h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: #254099;
+    margin-top: 10px;
+    border-radius: 2px;
+}
+
+.social-icons {
+    display: flex;
+    gap: 20px;
+    font-size: 22px;
+}
+
+.social-icons a {
+    color: #254099;
+    text-decoration: none;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #1f3579;
+    transform: scale(1.2);
+}
+
+.location {
+    margin-bottom: 30px;
+}
+
+/* Line under "Location" */
+.right-side .location h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: #254099;
+    margin-top: 10px;
+    border-radius: 2px;
+}
+
+.location p {
+    margin: 12px 0;
+    font-size: 18px;
+    color: #555;
+}
+
+.map-placeholder {
+    width: 100%;
+    height: 180px;
+    background-color: #e6e6e6;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 20px;
+}
+
+/* Map section */
+.right-side .map h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: #254099;
+    margin-top: 10px;
+    border-radius: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .contact-container {
+        flex-direction: column;
+        padding: 30px;
+    }
+
+    .left-side,
+    .right-side {
+        padding: 0;
+    }
+
+    .left-side {
+        margin-bottom: 30px;
+    }
+}
+
+/* General Heading Styling */
+h1, h2 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 10px;
+    position: relative;
+    padding-bottom: 10px;
+}

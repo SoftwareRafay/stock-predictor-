@@ -1,0 +1,92 @@
+
+
+.why-choose-us-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding:  30px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+  }
+  
+  .left-container {
+    text-align: left;
+    width: 45%;
+    justify-content: right;
+    
+    
+    
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  position: relative;
+  padding-bottom: 10px;
+  text-align: left;
+  
+}
+
+
+.title::after {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 2px;
+    background-color: #0000ff; /* Blue color for the underline */
+    left: 0;
+    bottom: 0;
+}
+  
+  .right-container {
+    
+    text-align: left;
+    width: 55%;
+  }
+  
+  .section-box {
+    display: flex;
+    align-items: center; /* Align items horizontally */
+    margin-bottom: 15px;
+  }
+  
+  .toggle-box {
+    width: 40px;
+    height: 40px;
+    background-color: #254099;
+    color: white;
+    border: 2px solid #254099;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .toggle-box.active {
+    background-color: white;
+    color: #254099;
+  }
+  
+  .heading {
+    font-size: 20px;
+    color: #254099;
+    font-weight: bold;
+  }
+  
+  .section-content {
+    padding: 20px 0; /* Add padding to top and bottom of content */
+    font-size: 16px;
+    color: #333333;
+    margin-left: 50px; /* Indent the content to align with headings */
+    
+  }
+  
+  .section-content p {
+    margin: 0;
+    line-height: 1.6; /* Improved readability with line spacing */
+  }
+  

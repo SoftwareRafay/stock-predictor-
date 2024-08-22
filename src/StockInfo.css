@@ -1,0 +1,49 @@
+.about-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+    text-align: center;
+    background-color: #f4f4f9; /* Light background color for contrast */
+    border-radius: 10px; /* Rounded corners for a modern look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  }
+  
+  .about-description {
+    font-size: 20px;
+    color: #555; /* Slightly lighter text color for readability */
+    line-height: 1.8;
+    margin-bottom: 30px;
+    padding: 0 20px; /* Padding to keep text from touching edges */
+  }
+  
+  .video-container {
+    margin: 20px 0;
+  }
+  
+  h1 {
+    color: #254099; /* Your theme color */
+    font-size: 40px; /* Slightly larger heading for prominence */
+    margin-bottom: 20px;
+    font-weight: bold; /* Bold heading for emphasis */
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .about-container {
+      padding: 20px;
+    }
+  
+    h1 {
+      font-size: 32px;
+    }
+  
+    .about-description {
+      font-size: 18px;
+    }
+  
+    iframe {
+      width: 100%; /* Make video responsive */
+      height: auto;
+    }
+  }
+  

@@ -1,0 +1,221 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+.footer {
+    background-color: #1F1F1F;
+    color: #d3d3d3;
+    padding: 40px 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 30px;
+    flex: 1;
+}
+
+.footer-section {
+    flex: 1;
+    padding: 0 20px;
+}
+
+.logo-cont {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.log {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+}
+
+.logo-tex {
+    font-size: 24px;
+    color: #ffffff;
+}
+
+.footer-section h2 {
+    color: #ffffff;
+    font-size: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer-section h2::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 2px;
+    background-color: #fff;
+    margin-top: 5px;
+}
+
+.footer-section p, .footer-section a {
+    color: #d3d3d3;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.footer-section a:hover {
+    color: #ffffff;
+}
+
+.footer-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+    text-decoration: none;
+    color: #8699D8; /* Match the link color */
+}
+
+.footer-section ul li a:hover {
+    color: #ffffff; /* Match the submit button hover color */
+}
+
+/* Hide the dropdown menu by default */
+.footer-section .ser-drop {
+    display: none;
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Show the dropdown menu when hovering over the "Services" item */
+.footer-section .serv:hover .ser-drop {
+    display: block;
+}
+
+/* Style the "Services" item */
+.footer-section .serv {
+    color: #8699D8; /* Color of the "Services" item */
+    position: relative; /* Needed to position the dropdown absolutely */
+    text-decoration: none;
+}
+
+/* Change color of "Services" on hover */
+.footer-section .serv:hover {
+    color: #ffffff; /* Change color on hover */
+}
+
+/* Style the dropdown links */
+.footer-section .ser-drop li {
+    margin-bottom: 10px;
+}
+
+.footer-section .ser-drop li a {
+    color: #8699D8;
+    text-decoration: none;
+    display: block; /* Ensure the links take up the full width of the dropdown */
+    padding: 5px;
+    text-align: center;
+}
+
+.footer-section .ser-drop li a:hover {
+    color: #ffffff; /* Color on hover */
+}
+
+/* Dropdown styling to ensure proper display */
+.footer-section .ser-drop {
+    position: absolute;
+    top: 100%; /* Position below the parent item */
+    left: 0;
+    background-color: #1F1F1F; /* Background color of the dropdown */
+    padding: 10px 0;
+    border-radius: 5px; /* Rounded corners */
+    width: 200px; /* Adjust width as needed */
+}
+
+.contact-form .text-input {
+    background-color: #333;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    color: #d3d3d3;
+}
+
+.contact-form .text-input::placeholder {
+    color: #999;
+}
+
+.contact-form .btn {
+    padding: 14px 28px;
+    background-color: #2D5FDE;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.footer-bottom {
+    background-color: #282828;
+    color: #d3d3d3;
+    text-align: center;
+    padding: 20px;
+    margin-top: auto; /* Pushes the footer-bottom to the bottom */
+}
+
+.footer-bottom p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.footer-social-icons {
+    margin-top: 10px;
+}
+
+.footer-social-icons a {
+    color: #d3d3d3;
+    margin: 0 10px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.footer-social-icons a:hover {
+    color: #ffffff;
+}
+
+.footer-social-icons i {
+    transition: color 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-section {
+        margin-bottom: 30px;
+    }
+
+    .logo-cont {
+        justify-content: center;
+    }
+
+    .contact-form .btn {
+        width: 100%; /* Full width on smaller screens */
+    }
+}

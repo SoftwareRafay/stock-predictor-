@@ -1,0 +1,346 @@
+/* General styles for Dashboard component */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.dashboard-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.search-container {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap; /* Ensure the search bar and button stay on the same line */
+}
+
+.search-container form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap; /* Keep items on the same line */
+}
+
+.search-container input {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-width: 300px; /* Limit the maximum width */
+  flex-grow: 1; /* Allow the input to take up available space */
+}
+
+.search-container button {
+  padding: 8px;
+  font-size: 16px;
+  background-color: #254099;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px; /* Added rounded corners */
+  flex-shrink: 0; /* Prevent button from shrinking */
+  max-width: 150px; /* Limit the maximum width */
+}
+
+.search-container button:hover {
+  background-color: #1f3c8c;
+}
+
+/* Additional button container styling */
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 10px;
+  flex-wrap: wrap; /* Allow wrapping for better mobile display */
+}
+
+.button-container button {
+  padding: 10px 20px;
+  background-color: #254099;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px; /* Added rounded corners */
+  width: 100%; /* Full width on small screens */
+  max-width: 150px; /* Limit the maximum width */
+}
+
+.button-container button:hover {
+  background-color: #1f3c8c;
+}
+
+/* Ticker styling */
+.ticker-container {
+  overflow: hidden;
+  white-space: nowrap;
+  margin-bottom: 20px;
+  background-color: #254099;
+  padding: 10px;
+  border-radius: 4px; /* Added rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added subtle shadow */
+}
+
+.ticker-content {
+  display: inline-block;
+  white-space: nowrap;
+  color: white;
+}
+
+.stock-data-container, .crypto-data-container {
+  margin-bottom: 20px;
+}
+
+.stock-data-container h2, .crypto-data-container h2 {
+  text-align: center;
+  color: #254099;
+}
+
+.stock-data-container table, .crypto-data-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.stock-data-container th, .crypto-data-container th,
+.stock-data-container td, .crypto-data-container td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.stock-data-container th, .crypto-data-container th {
+  background-color: #254099;
+  color: white;
+  position: sticky;
+  top: 0; /* Makes the table headers sticky */
+  z-index: 1;
+}
+
+/* Searched stock container */
+.searched-stock-container {
+  margin-bottom: 20px;
+  text-align: center; /* Center align the text */
+}
+
+.stocks-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.item-stock-open,.item-stock-high, .item-stock-low, .item-stock-close, .item-stock-vol{
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 18px;
+  color: white;
+}
+
+.item-stock-open { background-color: #007bff; }
+.item-stock-high { background-color: #ffc107; }
+.item-stock-low { background-color: #28a745; }
+.item-stock-close { background-color: #dc3545; }
+.item-stock-vol { background-color: #007bff; }
+
+
+/* Duration selector styling */
+.duration-selector {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center; /* Center align the duration dropdown */
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap; /* Allow wrapping for better mobile display */
+}
+
+.duration-selector label {
+  font-weight: bold;
+  color: #254099;
+}
+
+.duration-selector select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+/* Chart type selector styling */
+.chart-type-selector {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center; /* Center align the chart type dropdown */
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap; /* Allow wrapping for better mobile display */
+}
+
+.chart-type-selector label {
+  font-weight: bold;
+  color: #254099;
+}
+
+.chart-type-selector select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+/* Chart container styling */
+.chart-container {
+  width: 100%;
+  height: 400px; /* Adjust height as needed */
+  margin-bottom: 20px;
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.stock-data-container table,
+.crypto-data-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
+}
+
+.stock-data-container th,
+.crypto-data-container th,
+.stock-data-container td,
+.crypto-data-container td {
+  padding: 12px 15px; /* Increase padding for better spacing */
+  text-align: left;
+  border: 1px solid #ddd; /* Maintain border for clarity */
+}
+
+.stock-data-container th,
+.crypto-data-container th {
+  background-color: #254099;
+  color: white;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-transform: uppercase; /* Make header text uppercase */
+}
+
+.stock-data-container td,
+.crypto-data-container td {
+  background-color: #f9f9f9; /* Light background color for rows */
+}
+
+.stock-data-container tr:nth-child(even) td,
+.crypto-data-container tr:nth-child(even) td {
+  background-color: #f1f1f1; /* Slightly darker for even rows */
+}
+
+.stock-data-container tr:hover td,
+.crypto-data-container tr:hover td {
+  background-color: #e9e9e9; /* Highlight row on hover */
+}
+
+.stock-data-container th:first-child,
+.crypto-data-container th:first-child,
+.stock-data-container td:first-child,
+.crypto-data-container td:first-child {
+  border-left: 0; /* Remove left border on first column */
+}
+
+.stock-data-container th:last-child,
+.crypto-data-container th:last-child,
+.stock-data-container td:last-child,
+.crypto-data-container td:last-child {
+  border-right: 0; /* Remove right border on last column */
+}
+
+.stock-data-container td:first-child,
+.crypto-data-container td:first-child {
+  font-weight: bold; /* Bold the first column for emphasis */
+}
+
+.stock-data-container td,
+.crypto-data-container td {
+  text-align: center; /* Center-align data cells */
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+  .search-container {
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+  }
+
+  .search-container input,
+  .search-container button {
+    width: 100%; /* Full width on small screens */
+    margin-bottom: 10px;
+  }
+
+  .button-container button,
+  .duration-selector select,
+  .chart-type-selector select {
+    width: 100%; /* Full width on small screens */
+  }
+
+  .search-container form,
+  .button-container,
+  .duration-selector,
+  .chart-type-selector {
+    flex-direction: column;
+    align-items: center; /* Center align items for better display */
+  }
+
+  .duration-selector label,
+  .chart-type-selector label {
+    text-align: center;
+    width: 100%;
+  }
+
+  .button-container button {
+    margin-bottom: 10px;
+  }
+
+  .ticker-container {
+    text-align: center; /* Center align the ticker */
+  }
+
+  .ticker-content {
+    font-size: 14px; /* Adjust font size for better readability */
+  }
+
+  .stock-data-container table,
+  .crypto-data-container table {
+    display: block;
+    overflow-x: auto; /* Enable horizontal scrolling for small screens */
+    white-space: nowrap;
+  }
+
+  
+}
+
+@media (max-width: 463px) {
+  .search-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 0 10px; /* Add some padding for better fit */
+    box-sizing: border-box;
+  }
+
+  .search-container input[type="text"] {
+    flex: 1;
+    width: calc(100% - 90px); /* Adjust width to account for button width and margin */
+    margin-right: 5px;
+  }
+
+  .search-container button {
+    width: 80px; /* Set a fixed width for the button */
+    flex-shrink: 0;
+  }
+}
