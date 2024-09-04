@@ -1,7 +1,5 @@
 /* Portfolio.module.css */
 
-
-
 .portfolioPage input[type="text"],
 .portfolioPage input[type="date"],
 .portfolioPage input[type="number"] {
@@ -92,4 +90,31 @@
 .portfolioPage .globalError {
   color: red;
   font-weight: bold;
+}
+
+.portfolioContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.statistics {
+  flex: 2;
+  margin-right: 20px; /* Add spacing between statistics and pie chart */
+}
+
+.tableContainer {
+  flex: 2;
+}
+
+.pieChart {
+  flex: 1;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+.pieChart .apexcharts-canvas {
+  width: 200px; /* Adjust size as needed */
+  height: 200px;
 }

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Portfolio.module.css';
+import ApexCharts from 'react-apexcharts';
 
 function PortfolioPage() {
   const [stocks, setStocks] = useState([]);
@@ -13,6 +14,7 @@ function PortfolioPage() {
   const [totalPercentageGainLoss, setTotalPercentageGainLoss] = useState(0);
   const [globalError, setGlobalError] = useState('');
   const [hasStocks, setHasStocks] = useState(false);
+  const [colorMap, setColorMap] = useState({});
 
   const apiUrl = 'http://localhost:5000/stock_data';
 
@@ -43,8 +45,11 @@ function PortfolioPage() {
           const newStocks = [...stocks, { symbol, date, amount: amountValue, error: '' }];
           setStocks(newStocks);
           setGlobalError('');
-          setHasStocks(true); // Update state to show table
-          handleCalculate(newStocks); // Calculate portfolio value immediately after adding a stock
+          setHasStocks(true);
+          handleCalculate(newStocks);
+
+          // Update colors only when a new stock is added
+          updateColorMap(newStocks);
         }
 
         setSymbol('');
@@ -59,7 +64,7 @@ function PortfolioPage() {
   const handleRemoveStock = (index) => {
     const newStocks = stocks.filter((_, i) => i !== index);
     setStocks(newStocks);
-    setHasStocks(newStocks.length > 0); // Update state to hide table if no stocks remain
+    setHasStocks(newStocks.length > 0);
     handleCalculate(newStocks);
   };
 
@@ -88,6 +93,7 @@ function PortfolioPage() {
             symbol: stock.symbol,
             value: 0,
             bought: stock.amount.toFixed(2),
+            boughtOn: stock.date,
             profitOrLoss: 0,
             percentageGainLoss: 0,
             error: data.error,
@@ -105,6 +111,7 @@ function PortfolioPage() {
           symbol: stock.symbol,
           value: currentValue.toFixed(2),
           bought: stock.amount.toFixed(2),
+          boughtOn: stock.date,
           profitOrLoss: profitOrLoss.toFixed(2),
           percentageGainLoss: percentageGainLoss.toFixed(2),
           error: '',
@@ -118,6 +125,7 @@ function PortfolioPage() {
           symbol: stock.symbol,
           value: 0,
           bought: stock.amount.toFixed(2),
+          boughtOn: stock.date,
           profitOrLoss: 0,
           percentageGainLoss: 0,
           error: `Failed to fetch data for ${stock.symbol}: ${error.message}`,
@@ -134,9 +142,43 @@ function PortfolioPage() {
     setTotalPercentageGainLoss(percentageGainLoss.toFixed(2));
   };
 
+  const generateRandomColor = () => {
+    return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+  };
+
+  const updateColorMap = (stockList) => {
+    setColorMap((prevMap) => {
+      const newColorMap = { ...prevMap };
+      stockList.forEach(({ symbol }) => {
+        if (!newColorMap[symbol]) {
+          newColorMap[symbol] = generateRandomColor();
+        }
+      });
+      return newColorMap;
+    });
+  };
+
+  const aggregateDataForPieChart = () => {
+    const aggregatedData = currentValues.reduce((acc, { symbol, value }) => {
+      if (acc[symbol]) {
+        acc[symbol] += parseFloat(value);
+      } else {
+        acc[symbol] = parseFloat(value);
+      }
+      return acc;
+    }, {});
+
+    const labels = Object.keys(aggregatedData);
+    const series = Object.values(aggregatedData);
+    const colors = labels.map((label) => colorMap[label] || generateRandomColor());
+
+    return { labels, series, colors };
+  };
+
+  const { labels: chartLabels = [], series: chartSeries = [], colors: chartColors = [] } = aggregateDataForPieChart();
+
   return (
     <div className={styles.portfolioPage}>
-      
       <div>
         <input
           type="text"
@@ -149,7 +191,6 @@ function PortfolioPage() {
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
-        
         <input
           type="number"
           placeholder="Amount Invested"
@@ -157,17 +198,18 @@ function PortfolioPage() {
           value={amount}
           onChange={(e) => setAmount(e.target.value >= 0 ? e.target.value : '')}
         />
-        <br/>
+        <br />
         <button onClick={handleAddStock}>Add Stock</button>
       </div>
       {globalError && <p style={{ color: 'red' }}>{globalError}</p>}
       {hasStocks && (
-        <div>
+        <div className={styles.tableContainer}>
           <table>
             <thead>
               <tr>
                 <th>SYMBOL</th>
                 <th>Bought For</th>
+                <th>Bought On</th>
                 <th>Current Value</th>
                 <th>Profit/Loss</th>
                 <th>% Gain/Loss</th>
@@ -179,6 +221,7 @@ function PortfolioPage() {
                 <tr key={index}>
                   <td>{stock.symbol}</td>
                   <td>${stock.bought}</td>
+                  <td>{stock.boughtOn}</td>
                   <td>${stock.value}</td>
                   <td style={{ color: stock.profitOrLoss >= 0 ? 'green' : 'red' }}>
                     {stock.profitOrLoss >= 0 ? `Profit: $${stock.profitOrLoss}` : `Loss: $${Math.abs(stock.profitOrLoss)}`}
@@ -193,10 +236,52 @@ function PortfolioPage() {
               ))}
             </tbody>
           </table>
-          <h2>Total Invested: ${totalInvested}</h2>
-          <h2>Total Value: ${totalValue}</h2>
-          <h2>Total Profit/Loss: ${totalProfitOrLoss >= 0 ? totalProfitOrLoss : `-${Math.abs(totalProfitOrLoss)}`}</h2>
-          <h2>Total Percentage Gain/Loss: {totalPercentageGainLoss >= 0 ? `Gain: ${totalPercentageGainLoss}%` : `Loss: ${Math.abs(totalPercentageGainLoss)}%`}</h2>
+        </div>
+      )}
+      {hasStocks && (
+        <div className={styles.portfolioContent}>
+          <div className={styles.statistics}>
+            <h2>Total Invested: ${totalInvested}</h2>
+            <h2>Total Value: ${totalValue}</h2>
+            <h2>Total Profit/Loss: {totalProfitOrLoss >= 0 ? `$${totalProfitOrLoss}` : `-${Math.abs(totalProfitOrLoss)}`}</h2>
+            <h2>Total Percentage Gain/Loss: {totalPercentageGainLoss >= 0 ? `Gain: ${totalPercentageGainLoss}%` : `Loss: ${Math.abs(totalPercentageGainLoss)}%`}</h2>
+          </div>
+          
+          <div className={styles.pieChart}>
+            {chartSeries.length > 0 && (
+              <ApexCharts
+                type="pie"
+                series={chartSeries}
+                options={{
+                  labels: chartLabels,
+                  colors: chartColors,
+                  plotOptions: {
+                    pie: {
+                      donut: {
+                        size: '40%',
+                      },
+                    },
+                  },
+                  legend: {
+                    position: 'bottom',
+                  },
+                  responsive: [
+                    {
+                      breakpoint: 600,
+                      options: {
+                        chart: {
+                          width: 200,
+                        },
+                        legend: {
+                          position: 'bottom',
+                        },
+                      },
+                    },
+                  ],
+                }}
+              />
+            )}
+          </div>
         </div>
       )}
     </div>

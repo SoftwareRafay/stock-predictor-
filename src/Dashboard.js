@@ -3,7 +3,6 @@ import axios from 'axios';
 import Chart from 'react-apexcharts'; // Import ApexCharts
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
-
 import {
   Chart as ChartJS,
   TimeScale,
@@ -34,7 +33,11 @@ function Dashboard() {
   const [searchedStock, setSearchedStock] = useState(null); // State for searched stock data
   const [duration, setDuration] = useState('1y'); // State for duration selection
   const [chartType, setChartType] = useState('line'); // State for chart type selection (line or candlestick)
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' }); // Sorting state
   const tickerRef = useRef(null);
+  const [sortedStockData, setSortedStockData] = useState([]);
+  const [sortedCryptoData, setSortedCryptoData] = useState([]);
+  
 
   useEffect(() => {
     fetchStockData();
@@ -42,31 +45,36 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
+    setSortedStockData(stockData); 
+    setSortedCryptoData(cryptoData);
+  }, [stockData, cryptoData]);
+
+  useEffect(() => {
     const ticker = tickerRef.current;
     if (ticker) {
-      const tickerText = getTickerText();
-      // Duplicate the ticker text to make it longer
-      ticker.innerHTML = `<div style="color: white">${tickerText} | ${tickerText}</div>`;
+        const tickerText = getTickerText();
+        ticker.innerHTML = `<div style="color: white">${tickerText} | ${tickerText}</div>`;
+        
+        const tickerWidth = ticker.scrollWidth;
+        const containerWidth = ticker.parentElement.offsetWidth;
 
-      const tickerWidth = ticker.scrollWidth;
-      const containerWidth = ticker.parentElement.offsetWidth;
+        let startPosition = 0;
+        let currentPosition = startPosition;
+        const speed = 1; // Adjust this value for smoother or faster scrolling
 
-      let startPosition = 0;
-      let currentPosition = startPosition;
-      const speed = 1; // Adjust this value for smoother or faster scrolling
+        const animateTicker = () => {
+            currentPosition -= speed;
+            if (currentPosition <= -tickerWidth / 2) {
+                currentPosition = 0; // Reset position to the start of the container
+            }
+            ticker.style.transform = `translateX(${currentPosition}px)`;
+            requestAnimationFrame(animateTicker);
+        };
 
-      const animateTicker = () => {
-        currentPosition -= speed;
-        if (currentPosition <= -tickerWidth / 2) {
-          currentPosition = 0; // Reset position to the start of the container
-        }
-        ticker.style.transform = `translateX(${currentPosition}px)`;
-        requestAnimationFrame(animateTicker);
-      };
-
-      animateTicker();
+        animateTicker();
     }
-  }, [stockData, cryptoData, view]);
+}, [view, stockData, cryptoData]); // Added sortConfig dependency
+
 
   const fetchStockData = async () => {
     try {
@@ -80,6 +88,35 @@ function Dashboard() {
       console.error('Error fetching stock data:', error);
     }
   };
+
+  const parseMarketCap = (value) => {
+    // Check if the value is a string and contains a suffix
+    if (typeof value === 'string') {
+      // Match numeric value and suffix (B, M, K, T)
+      const match = value.match(/^([\d,.]+)\s*([BKMGT]?)$/i);
+      if (match) {
+        const number = parseFloat(match[1].replace(/,/g, '')); // Remove commas and parse as float
+        const suffix = match[2].toUpperCase(); // Convert suffix to uppercase for consistent handling
+        
+        // Return the value multiplied by the appropriate factor based on the suffix
+        switch (suffix) {
+          case 'T':
+            return number * 1e12; // Trillion
+          case 'B':
+            return number * 1e9;  // Billion
+          case 'M':
+            return number * 1e6;  // Million
+          case 'K':
+            return number * 1e3;  // Thousand
+          default:
+            return number; // If no suffix, return the number as is
+        }
+      }
+    }
+    return 0; // Default for unrecognized format or non-string values
+  };
+  
+
 
   const fetchCryptoData = async () => {
     try {
@@ -114,9 +151,10 @@ function Dashboard() {
 
   const formatNumber = (number) => {
     return (typeof number === 'number' && isFinite(number))
-      ? number.toFixed(2)
-      : 'N/A';
-  };
+        ? number.toLocaleString() // Converts number to locale string with thousands separators
+        : 'N/A';
+};
+
 
   const getTickerText = () => {
     if (view === 'stock') {
@@ -158,6 +196,53 @@ function Dashboard() {
       ],
     }));
   };
+
+  const handleSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  
+    let sortedData;
+    if (view === 'stock') {
+      sortedData = [...stockData];
+    } else {
+      sortedData = [...cryptoData];
+    }
+  
+    if (key === 'symbol') {
+      sortedData.sort((a, b) => {
+        if (a[key] < b[key]) {
+          return direction === 'ascending' ? -1 : 1;
+        }
+        if (a[key] > b[key]) {
+          return direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    } else {
+      sortedData.sort((a, b) => {
+        const aValue = key === 'marketCap' ? parseMarketCap(a[key]) : (typeof a[key] === 'string' ? parseFloat(a[key].replace(/[^0-9.-]/g, '')) : a[key]);
+        const bValue = key === 'marketCap' ? parseMarketCap(b[key]) : (typeof b[key] === 'string' ? parseFloat(b[key].replace(/[^0-9.-]/g, '')) : b[key]);
+        return direction === 'ascending' ? aValue - bValue : bValue - aValue;
+      });
+    }
+  
+    if (view === 'stock') {
+      setSortedStockData(sortedData);
+    } else {
+      setSortedCryptoData(sortedData);
+    }
+  };
+  
+  const getArrow = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'ascending' ? '▲' : '▼';
+    }
+    return '';
+  };
+
 
   return (
     <div className="dashboard-container">
@@ -209,73 +294,72 @@ function Dashboard() {
           <div className="searched-stock-container">
             <h2>Searched Stock: {searchedStock.symbol}</h2>
             <div className="stocks-grid">
-            <p className="item-stock-open"> Open: {formatNumber(searchedStock.open)} </p>
-            <p className="item-stock-high">High: {formatNumber(searchedStock.high)}</p>
-            <p className="item-stock-low">Low: {formatNumber(searchedStock.low)}</p>
-            <p className="item-stock-close">Close: {formatNumber(searchedStock.close)}</p>
-            <p className="item-stock-vol">Volume: {searchedStock.volume?.toLocaleString()}</p>
+              <p className="item-stock-open"> Open: {formatNumber(searchedStock.open)} </p>
+              <p className="item-stock-high">High: {formatNumber(searchedStock.high)}</p>
+              <p className="item-stock-low">Low: {formatNumber(searchedStock.low)}</p>
+              <p className="item-stock-close">Close: {formatNumber(searchedStock.close)}</p>
+              <p className="item-stock-vol">Volume: {searchedStock.volume?.toLocaleString()}</p>
             </div>
             {searchedStock.graphData && chartType === 'line' && (
-  <Line
-    data={{
-      labels: searchedStock.graphData.dates,
-      datasets: [
-        {
-          label: `${searchedStock.symbol} Price`,
-          data: searchedStock.graphData.close,
-          borderColor: 'rgba(37,64,153,1)',
-          fill: false,
-          pointRadius: duration === '5y' || duration === 'max' ? 0 : 3, // Remove point bubbles for 5 years and all time
-          borderWidth: 2,
-        },
-      ],
-    }}
-    options={{
-      scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'day',
-          },
-        },
-        y: {
-          beginAtZero: false,
-        },
-      },
-      plugins: {
-        tooltip: {
-          mode: 'index', // Ensures the tooltip appears when the mouse is directly over the point on the x-axis
-          intersect: false, // Allows the tooltip to be triggered by the x-axis intersection, not just by the point itself
-          callbacks: {
-            label: (tooltipItem) => {
-              const index = tooltipItem.dataIndex;
-              const open = searchedStock.graphData.open[index];
-              const close = searchedStock.graphData.close[index];
-              const high = searchedStock.graphData.high[index];
-              const low = searchedStock.graphData.low[index];
-              const volume = searchedStock.graphData.volume[index];
-
-              return [
-                `Open: ${formatNumber(open)}`,
-                `Close: ${formatNumber(close)}`,
-                `High: ${formatNumber(high)}`,
-                `Low: ${formatNumber(low)}`,
-                `Volume: ${volume?.toLocaleString()}`,
-              ];
-            },
-            title: (tooltipItems) => {
-              // Show the date as the title if needed, otherwise return empty to omit it
-              const date = tooltipItems[0].label;
-              return date ? `${date}` : '';
-            },
-          },
-        },
-      },
-    }}
-  />
-)}
-
-
+               <Line
+               data={{
+                 labels: searchedStock.graphData.dates,
+                 datasets: [
+                   {
+                     label: `${searchedStock.symbol} Price`,
+                     data: searchedStock.graphData.close,
+                     borderColor: 'rgba(37,64,153,1)',
+                     fill: false,
+                     pointRadius: duration === '5y' || duration === 'max' ? 0 : 3, // Remove point bubbles for 5 years and all time
+                     borderWidth: 2,
+                   },
+                 ],
+               }}
+               options={{
+                 scales: {
+                   x: {
+                     type: 'time',
+                     time: {
+                       unit: 'day',
+                     },
+                   },
+                   y: {
+                     beginAtZero: false,
+                   },
+                 },
+                 plugins: {
+                   tooltip: {
+                     mode: 'index', // Ensures the tooltip appears when the mouse is directly over the point on the x-axis
+                     intersect: false, // Allows the tooltip to be triggered by the x-axis intersection, not just by the point itself
+                     callbacks: {
+                       label: (tooltipItem) => {
+                         const index = tooltipItem.dataIndex;
+                         const open = searchedStock.graphData.open[index];
+                         const close = searchedStock.graphData.close[index];
+                         const high = searchedStock.graphData.high[index];
+                         const low = searchedStock.graphData.low[index];
+                         const volume = searchedStock.graphData.volume[index];
+           
+                         return [
+                           `Open: ${formatNumber(open)}`,
+                           `Close: ${formatNumber(close)}`,
+                           `High: ${formatNumber(high)}`,
+                           `Low: ${formatNumber(low)}`,
+                           `Volume: ${volume?.toLocaleString()}`,
+                         ];
+                       },
+                       title: (tooltipItems) => {
+                         // Show the date as the title if needed, otherwise return empty to omit it
+                         const date = tooltipItems[0].label;
+                         return date ? `${date}` : '';
+                       },
+                     },
+                   },
+                 },
+               }}
+             />
+            )}
+            
             {searchedStock.graphData && chartType === 'candlestick' && (
               <Chart
                 options={{
@@ -303,61 +387,61 @@ function Dashboard() {
         </>
       )}
 
-      {view === 'stock' && (
-        <div className="stock-data-container">
-          <h2>Indices Stocks</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Symbol</th>
-                <th>Open</th>
-                <th>Close</th>
-                <th>High</th>
-                <th>Low</th>
-                <th>Volume</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stockData.slice(0, 10).map((item, index) => (
-                <tr key={index}>
-                  <td>{item.symbol}</td>
-                  <td>{formatNumber(item.open)}</td>
-                  <td>{formatNumber(item.close)}</td>
-                  <td>{formatNumber(item.high)}</td>
-                  <td>{formatNumber(item.low)}</td>
-                  <td>{item.volume.toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+{view === 'stock' && (
+  <div className="stock-data-container">
+    <h2>Stock Data</h2>
+    <table>
+      <thead>
+        <tr>
+          <th onClick={() => handleSort('symbol')}>Symbol {getArrow('symbol')}</th>
+          <th onClick={() => handleSort('open')}>Open {getArrow('open')}</th>
+          <th onClick={() => handleSort('close')}>Close {getArrow('close')}</th>
+          <th onClick={() => handleSort('high')}>High {getArrow('high')}</th>
+          <th onClick={() => handleSort('low')}>Low {getArrow('low')}</th>
+          <th onClick={() => handleSort('volume')}>Volume {getArrow('volume')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sortedStockData.map((stock) => (
+          <tr key={stock.symbol}>
+            <td>{stock.symbol}</td>
+            <td>{formatNumber(stock.open)}</td>
+            <td>{formatNumber(stock.close)}</td>
+            <td>{formatNumber(stock.high)}</td>
+            <td>{formatNumber(stock.low)}</td>
+            <td>{stock.volume?.toLocaleString()}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
 
-      {view === 'crypto' && (
-        <div className="crypto-data-container">
-          <h2>Crypto Data</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Symbol</th>
-                <th>Price</th>
-                <th>Change</th>
-                <th>Market Cap</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cryptoData.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.symbol}</td>
-                  <td>{formatNumber(item.price)}</td>
-                  <td>{formatNumber(item.change)}</td>
-                  <td>{item.marketCap?.toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+{view === 'crypto' && (
+  <div className="crypto-data-container">
+    <table>
+      <thead>
+        <tr>
+          <th onClick={() => handleSort('symbol')}>Symbol {getArrow('symbol')}</th>
+          <th onClick={() => handleSort('price')}>Price {getArrow('price')}</th>
+          <th onClick={() => handleSort('change')}>Change {getArrow('change')}</th>
+          <th onClick={() => handleSort('marketCap')}>Market Cap {getArrow('marketCap')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sortedCryptoData.map((crypto) => (
+          <tr key={crypto.symbol}>
+            <td>{crypto.symbol}</td>
+            <td>{formatNumber(crypto.price)}</td>
+            <td>{formatNumber(crypto.change)}</td>
+            <td>{crypto.marketCap?.toLocaleString()}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
     </div>
   );
 }

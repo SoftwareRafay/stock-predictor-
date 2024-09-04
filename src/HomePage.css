@@ -1,292 +1,318 @@
-/* Body background */
+/* General Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 .main-body {
-    position: relative;
-    /* Make it a positioned element */
-    width: 100%;
-    min-height: 100vh;
-    /* Full viewport height */
-    overflow: hidden;
-    /* Hide overflow */
-  }
-  
-  /* Carousel container */
-  .carousel-container {
-    position: relative;
-    /* Make it a positioned element */
-    width: 100%;
-    height: calc(100vh - 100px);
-    /* Full viewport height minus 100px */
-    overflow: hidden;
-    /* Hide overflow */
-  }
-  
-  /* Image container */
-  .image-container {
-    position: absolute;
-    /* Position it absolutely */
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    display: flex;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
+
+/* Carousel Container */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+}
+
+.image-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+  opacity: 0;
+  z-index: 1;
+}
+
+.image-container.active {
+  opacity: 1;
+  z-index: 2;
+  transform: translateX(0);
+}
+
+.slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.text-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateX(-100%);
+  color: white;
+  z-index: 3;
+  transition: transform 1s ease-in-out;
+}
+
+.image-container.active .text-container {
+  transform: translate(-50%, -50%) translateX(0);
+}
+
+.txt1 {
+  font-size: 32px;
+  color: #89A6EF;
+}
+
+.txt2 {
+  font-size: 60px;
+  color: white;
+  font-weight: bold;
+}
+
+.txt3 {
+  font-size: 32px;
+  color: white;
+}
+
+.cont-button {
+  padding-top: 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  z-index: 4;
+}
+
+.contact-button {
+  padding: 10px 25px;
+  font-size: 16px;
+  color: #254099;
+  background-color: white;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-weight: bold;
+}
+
+.contact-button:hover {
+  background-color: #254099;
+  color: white;
+}
+
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.nav-button.left {
+  left: 10px;
+}
+
+.nav-button.right {
+  right: 10px;
+}
+
+/* Service Container Styles */
+.service-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.service-section {
+  flex: 1;
+  text-align: center;
+  color: white;
+  padding: 20px;
+  max-width: 25%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.service-section img {
+  width: 70px;  
+  height: 70px;
+  margin-bottom: 10px;
+}
+
+.service-section p {
+  margin: 10px 0;
+}
+
+.service-section.predictions {
+  background-image: url('./img-pred.jpg');
+}
+
+.service-section.ontime {
+  background-image: url('./ontime.jpg');
+}
+
+.service-section.secure {
+  background-image: url('./safety.jpg');
+}
+
+.service-section.professionals {
+  background-image: url('./peoples.jpg');
+}
+
+/* Services We Provide Section */
+.services-provide {
+  padding: 50px 20px;
+  text-align: center;
+  background-color: #f7f7f7;
+}
+
+.services-provide h2 {
+  position: relative;
+  display: inline-block; 
+}
+
+.services-provide h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background-color: #254099;
+  margin-top: 10px;
+  border-radius: 2px;
+  margin-left: 0; 
+}
+
+
+
+
+.services-heading {
+  font-size: 36px;
+  color: #254099;
+}
+
+.services-subheading {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 40px;
+}
+
+.services-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.service-box {
+  flex: 1;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  text-align: left; /* Left align text */
+}
+
+.service-box:hover {
+  transform: translateY(-10px);
+}
+
+.service-box img {
+  width: 100%;  /* Ensure all images take full width */
+  height: 200px; /* Set a fixed height for uniformity */
+  object-fit: cover; /* Ensure the images maintain aspect ratio */
+  margin-bottom: 20px;
+}
+
+.service-box h3 {
+  font-size: 24px;
+  color: #254099;
+  margin-bottom: 15px;
+  padding: 20px 20px 5px 20px;
+}
+
+.service-box p {
+  font-size: 16px;
+  color: #555;
+  padding: 5px 20px 20px 20px;
+}
+
+/* Remove text decoration from all links */
+a {
+  text-decoration: none;
+}
+
+/* Remove text decoration from links within service boxes */
+.service-box a {
+  text-decoration: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .service-container {
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
-    opacity: 0;
-    /* Hidden by default */
-    z-index: 1;
-    /* Ensure it's on top of other elements */
   }
-  
-  /* Make only the active image visible */
-  .image-container.active {
-    opacity: 1;
-    /* Visible */
-    z-index: 2;
-    /* Ensure it's on top of other images */
-    transform: translateX(0);
-    /* Move to the original position */
+
+  .service-section {
+    max-width: 100%;
   }
-  
-  .slide-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Ensure the image covers the container */
+
+  .services-container {
+    flex-direction: column;
   }
-  
-  /* Text container */
-  .text-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) translateX(-100%);
-    /* Start off-screen to the left */
-    color: white;
-    z-index: 3;
-    /* Ensure text is on top of image */
-    transition: transform 1s ease-in-out;
-    /* Smooth transition for sliding text */
+
+  .service-box {
+    margin-bottom: 20px;
   }
-  
-  /* Make text visible when image is active */
-  .image-container.active .text-container {
-    transform: translate(-50%, -50%) translateX(0);
-    /* Slide to the center */
+}
+
+@media (max-width: 580px) {
+  .navbar-list {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  /* Text styling */
-  .txt1 {
-    font-size: 32px;
-    color: #89A6EF;
-  }
-  
-  .txt2 {
-    font-size: 60px;
-    color: white;
-    font-weight: bold;
-  }
-  
-  .txt3 {
-    font-size: 32px;
-    color: white;
-  }
-  
-  /* Button container */
-  .cont-button {
-    padding-top: 20px;
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    /* Space between buttons */
-    z-index: 4;
-    /* Ensure buttons are on top */
-  }
-  
-  /* Contact button styling */
-  .contact-button {
-    padding: 10px 25px;
-    /* Add padding to the button */
-    font-size: 16px;
-    /* Font size for the button */
-    color: #254099;
-    /* Blue text color */
-    background-color: white;
-    /* White background color */
-    border-radius: 25px;
-    /* Rounded corners */
-    cursor: pointer;
-    /* Pointer cursor */
-    transition: background-color 0.3s ease, color 0.3s ease;
-    /* Smooth transition for background color and text color */
-    font-weight: bold;
-  }
-  
-  .contact-button:hover {
-    background-color: #254099;
-    /* Blue background on hover */
-    color: white;
-    /* White text on hover */
-  }
-  
-  /* Navigation button styling */
-  .nav-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 24px;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    z-index: 5;
-    /* Ensure navigation buttons are on top */
-  }
-  
-  .nav-button.left {
-    left: 10px;
-  }
-  
-  .nav-button.right {
-    right: 10px;
-  }
-  
-  
-  
-  .second-body p {
+
+  .navbar-item {
     margin: 10px 0;
-    font-size: 18px;
-    color: white;
-  
-    padding: 20px 10px 10px 10px;
-  
-    align-items: center;
   }
-  
-  .serv-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    /* Center items horizontally */
-    height: 50vh;
-   
-  
+
+  .logo {
+    height: 60px;
   }
-  
-  .serv-item {
-    flex: 1 1 calc(50% - 20px);
-    /* Each item takes up 50% of the container minus the margin */
-  
+
+  .services .dropdown {
+    position: static;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .services .dropdown li {
+    padding: 10px 20px;
     background-color: #fff;
-    /* Background color for each item */
-    border: 1px solid #ddd;
-    /* Border for each item */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    /* Shadow for depth */
-    text-align: center;
-    /* Center text */
-    align-items: center;
+    border-bottom: 1px solid #ddd;
   }
-  
-  /* Service items with background images */
-  .pred,
-  .secure,
-  .on-time,
-  .prof {
-    font-size: 16px;
-    /* Font size for text */
-    color: white;
-    /* Text color */
-    margin: 10px 0;
-    /* Margin around text */
-    background-size: cover;
-    background-position: center;
+
+  .services .dropdown li a {
+    color: #000;
   }
-  
-  .pred {
-    background-image: url('img-pred.jpg');
+}
+@media (max-width: 550px) {
+  .txt1 {
+    font-size: 24px;
   }
-  
-  .pred img {
-    width: 70px;
-    height: 70px;
-    padding: 10px;
+
+  .txt2 {
+    font-size: 36px;
   }
-  
-  .secure {
-    background-image: url('img-pred.jpg');
+
+  .txt3 {
+    font-size: 24px;
   }
-  
-  .secure img {
-    width: 70px;
-    height: 70px;
-    padding: 10px;
-  }
-  
-  .on-time {
-    background-image: url('image-ontime.jpg');
-  }
-  
-  .on-time img {
-    width: 70px;
-    height: 70px;
-    padding: 10px;
-  }
-  
-  .prof {
-    background-image: url('img-pred.jpg');
-  }
-  
-  .prof img {
-    width: 70px;
-    height: 70px;
-    padding: 10px;
-  }
-  
-  /* Media queries for responsiveness */
-  @media (max-width: 580px) {
-    .navbar-list {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .navbar-item {
-      margin: 10px 0;
-    }
-  
-    .logo {
-      height: 60px;
-    }
-  
-    .services .dropdown {
-      position: static;
-      background-color: transparent;
-      box-shadow: none;
-    }
-  
-    .services .dropdown li {
-      padding: 10px 20px;
-      background-color: #fff;
-      border-bottom: 1px solid #ddd;
-    }
-  
-    .services .dropdown li a {
-      color: #000;
-    }
-  
-    .serv-container {
-      flex-direction: column;
-      flex-wrap: wrap;
-      justify-content: center;
-      /* Stack items vertically */
-    }
-  
-    .serv-item {
-      flex: 1 1 auto;
-      /* Allow items to grow and shrink */
-      width: 100%;
-      /* Full width for each item */
-    }
-  }
+}

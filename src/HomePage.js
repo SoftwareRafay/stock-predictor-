@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./HomePage.css";
-import img1 from "./img1.jpg";
-import img2 from "./img3.gif";
+import img1 from "./image.jpg";
+import stockVideo from './stock.mp4'; 
 import predImage from './pred.png';
-import secureImage from './secure.jpeg'
-import timeImage from './time.png'
-
+import secureImage from './secure.jpeg';
+import timeImage from './time.png';
+import predict from './predict-1.jpg';
+import portfolio from './portfolio.png';
+import dashboard from './dashboard.jpg';
 
 function HomePage() {
 	const [activeImage, setActiveImage] = useState(0);
@@ -21,7 +23,8 @@ function HomePage() {
 			links: [{ text: "Contact Us", to: "/contact" }],
 		},
 		{
-			src: img2,
+			src: stockVideo, 
+			isVideo: true,  
 			text1: "StockInsight",
 			text2: "Invest with insight.",
 			text3: "We help managing money, provide stock insight.",
@@ -63,11 +66,21 @@ function HomePage() {
 							index === activeImage ? "active" : ""
 						}`}
 					>
-						<img
-							src={image.src}
-							alt={`Slide ${index + 1}`}
-							className="slide-image"
-						/>
+						{image.isVideo ? (
+							<video
+								autoPlay
+								muted
+								loop
+								className="slide-image"
+								src={image.src}
+							/>
+						) : (
+							<img
+								src={image.src}
+								alt={`Slide ${index + 1}`}
+								className="slide-image"
+							/>
+						)}
 						<div className="text-container">
 							<p className="txt1">
 								{image.text1} <br /> <span className="txt2">{image.text2}</span>
@@ -92,37 +105,56 @@ function HomePage() {
 				</button>
 			</div>
 
-			<span className="second-body">
-				<span className="serv-container">
-					<span className="serv-item pred">
-            <img src={predImage} alt="pred"/>
-          
-						<p>95% ACCURATE PREDICTIONS<br/><p>
-							Using our machine learning models we provide accurate stock
-							predictions.
-						</p></p>
-						
-					</span>
-					<span className="serv-item secure">
-          <img src={secureImage} alt="pred"/>
-						<p>SECURE<br/><p>We keep your information secure.</p></p>
-						
-					</span>
-					<span className="serv-item on-time">
-          <img src={timeImage} alt="pred"/>
-						<p>ON TIME SERVICES<br/><p>
-							On-time services deliver accurate and up-to-date stock insights,
-							helping you make informed investment decisions promptly.
-						</p></p>
-						
-					</span>
-					<span className="serv-item prof">
-          <img src={`${process.env.PUBLIC_URL}/prof.jpg`} alt="prof" />
-						<p>A TEAM OF PROFESSIONALS<br/><p>Highly trained technical staff at your service.</p></p>
-						
-					</span>
-				</span>
-			</span>
+			<div className="service-container">
+				<div className="service-section predictions">
+					<img src={predImage} alt="95% Accurate Predictions" />
+					<p>95% ACCURATE PREDICTIONS</p>
+					<p>Using our machine learning models we provide accurate stock predictions.</p>
+				</div>
+				<div className="service-section secure">
+					<img src={secureImage} alt="Secure" />
+					<p>SECURE</p>
+					<p>We keep your information secure.</p>
+				</div>
+				<div className="service-section ontime">
+					<img src={timeImage} alt="On Time Services" />
+					<p>ON TIME SERVICES</p>
+					<p>On-time services deliver accurate and up-to-date stock insights, helping you make informed investment decisions promptly.</p>
+				</div>
+				<div className="service-section professionals">
+					<img src={`${process.env.PUBLIC_URL}/prof.jpg`} alt="Professionals" />
+					<p>A TEAM OF PROFESSIONALS</p>
+					<p>Highly trained technical staff at your service.</p>
+				</div>
+			</div>
+
+			<div className="services-provide">
+                <h2 className="services-heading">Services We Provide</h2>
+                {/* <p className="services-subheading">COVERED IN THESE AREAS</p> */}
+                <div className="services-container">
+                    <Link to="/predict">
+                        <div className="service-box">
+                            <img src={predict} alt="predict" />
+                            <h3>Predict Stock</h3>
+                            <p>Utilize advanced forecasting techniques to predict stock market trends and assist investors with data-driven decisions.</p>
+                        </div>
+                    </Link>
+                    <Link to="/portfolio">
+                        <div className="service-box">
+                            <img src={portfolio} alt="portfolio" />
+                            <h3>Portfolio Management</h3>
+                            <p>Optimize investment portfolios with strategic asset allocation and risk management tailored to individual financial goals.</p>
+                        </div>
+                    </Link>
+                    <Link to="/dashboard">
+                        <div className="service-box">
+                            <img src={dashboard} alt="dashboard" />
+                            <h3>Dashboard </h3>
+                            <p>Monitor and analyze market data with interactive dashboards that provide insights and performance metrics for better decision-making.</p>
+                        </div>
+                    </Link>
+                </div>
+            </div>
 		</div>
 	);
 }

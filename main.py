@@ -10,10 +10,11 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from keras.layers import Dense, Dropout, LSTM
 from keras.models import Sequential
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import warnings
 import os
-import requests
 from requests_html import HTMLSession
 from statsmodels.tsa.arima.model import ARIMA
 from flask import send_from_directory
@@ -97,7 +98,7 @@ def linear_regression_analysis(df):
     model = LinearRegression(n_jobs=-1)
     model.fit(x_train, y_train)
 
-    y_pred = model.predict(x_test) * 1.04
+    y_pred = model.predict(x_test) 
     fig = plt.figure(figsize=(7, 5))
     plt.plot(y_test, label="Real price")
     plt.plot(y_pred, label='Predicted price')
@@ -106,7 +107,7 @@ def linear_regression_analysis(df):
     plt.close(fig)
 
     linear_error = math.sqrt(mean_squared_error(y_test, y_pred))
-    forecast_results = model.predict(forcast_x) * 1.04
+    forecast_results = model.predict(forcast_x) 
     mean = forecast_results.mean()
     linear_pred = forecast_results[0, 0]
 
@@ -133,7 +134,7 @@ def ARIMA_analysis(df):
     for t in range(len(test)):
         yhat = arima_forecast(history)
         predictions.append(yhat)
-        history.append(test[t])  # Add the observed value to history for the next step
+        history.append(test[t])  
 
     model = ARIMA(history, order=(5,1,0))  
     model_fit = model.fit()
@@ -142,9 +143,9 @@ def ARIMA_analysis(df):
     # Plotting the results
     fig = plt.figure(figsize=(7, 5))
     plt.plot(test, label="Real price")
-    plt.plot(predictions, label='Predicted price (ARIMA)')
+    plt.plot(predictions, label='Predicted price')
     plt.legend()
-    plt.savefig('ARIMA.png')  # Save the plot as an image file
+    plt.savefig('ARIMA.png')  
     plt.close(fig)
 
     
@@ -166,7 +167,7 @@ def recommendation(today_price,mean):
     
     return price, decision
 def plot_price_vs_moving_averages(df):
-    # Calculate 100-day and 200-day moving averages
+    
     df['MA100'] = df['Close'].rolling(window=100).mean()
     df['MA200'] = df['Close'].rolling(window=200).mean()
 
@@ -177,7 +178,7 @@ def plot_price_vs_moving_averages(df):
     plt.plot(df['MA200'], label="200-Day MA")
     plt.title('Price vs 100 & 200 Day Moving Averages')
     plt.legend()
-    plt.savefig('Moving.png')  # Save the plot as an image file
+    plt.savefig('Moving.png')  
     plt.close(fig)
 
 
@@ -247,7 +248,10 @@ def stock_data():
     stock = yf.Ticker(stock_symbol)
     stock_data = stock.history(period="max")
 
-    # Ensure the DataFrame index is in datetime format
+    if stock_data.empty:
+            return jsonify({'error': 'Stock symbol does not exist.'})
+
+    
     stock_data.index = pd.to_datetime(stock_data.index).date
 
     # Find the nearest date
@@ -277,7 +281,7 @@ def fetch_stocks():
             stock = yf.Ticker(symbol)
             stock_info = stock.history(period="1d")
             
-            # Convert NumPy types to native Python types
+            
             stock_data = {
                 'symbol': symbol,
                 'open': float(stock_info['Open'].values[0]),
@@ -298,21 +302,27 @@ def fetch_stocks():
 
 def fetch_crypto_data():
     session = HTMLSession()
-    num_currencies = 10  # Fetch data for 10 cryptocurrencies
-    resp = session.get(f"https://finance.yahoo.com/crypto?offset=0&count={num_currencies}")
+    resp = session.get(f"https://finance.yahoo.com/markets/crypto/all/")
     tables = pd.read_html(resp.html.raw_html)
     df = tables[0].copy()
 
     crypto_data = []
-    for index, row in df.iterrows():
+    for index, row in df.head(10).iterrows():  # Only first 10 rows
+        price_str = row['Price']
+        price_value, change_value = price_str.split(' ')[0], price_str.split(' ')[1]
+        price_value = float(price_value.replace(',', ''))
+        change_value = float(change_value.replace(',', '').replace('(', '').replace(')', '').replace('%', ''))
+
         crypto_data.append({
             'symbol': row['Symbol'],
-            'price': row['Price (Intraday)'],
-            'change': row['Change'],
+            'price': price_value,
+            'change': change_value,
             'marketCap': row['Market Cap']
         })
 
     return crypto_data
+
+
 
 @app.route('/api/crypto', methods=['GET'])
 def get_crypto_data():
